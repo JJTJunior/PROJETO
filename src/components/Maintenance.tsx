@@ -169,36 +169,10 @@ export function Maintenance({ userId, initialSearch = '', initialTab = 'in_progr
         }
       }
       await update(editingId, payload);
-
-      // Create transaction if completing with cost
-      if (oldMaint && oldMaint.status === 'in_progress' && formData.status === 'completed' && Number(formData.cost) > 0) {
-        await supabase.from('transactions').insert({
-          user_id: userId,
-          date: payload.end_date || payload.start_date,
-          description: `Manutenção: ${payload.equipment_name} (${payload.reason})`,
-          category: 'Manutenção',
-          type: 'expense',
-          amount: Number(formData.cost),
-          status: 'paid'
-        });
-      }
     } else {
       // New maintenance: remove from available, add to maintenance
       await updateEquipmentStock(formData.equipment_id, formData.quantity, -1, 1, formData.lot_number);
       await insert(payload as any);
-      
-      // If created as completed already (rare but possible)
-      if (formData.status === 'completed' && Number(formData.cost) > 0) {
-        await supabase.from('transactions').insert({
-          user_id: userId,
-          date: payload.end_date || payload.start_date,
-          description: `Manutenção: ${payload.equipment_name} (${payload.reason})`,
-          category: 'Manutenção',
-          type: 'expense',
-          amount: Number(formData.cost),
-          status: 'paid'
-        });
-      }
     }
     
     setSaving(false);
