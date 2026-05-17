@@ -37,6 +37,7 @@ interface OrderRow {
   end_date: string;
   total_amount: number;
   status: 'pending' | 'rented' | 'completed';
+  contract_number?: string;
 }
 
 interface Category {
@@ -57,7 +58,7 @@ export function Finance({ userId }: FinanceProps) {
   
   useEffect(() => {
     if (!userId) return;
-    supabase.from('orders').select('id, user_id, customer_name, end_date, total_amount, status').eq('user_id', userId).then(({ data }) => {
+    supabase.from('orders').select('id, user_id, customer_name, end_date, total_amount, status, contract_number').eq('user_id', userId).then(({ data }) => {
       if (data) setOrders(data);
       setLoadingOrders(false);
     });
