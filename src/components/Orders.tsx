@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
-import { Plus, Search, Filter, Eye, Printer, Edit, Trash2, X, Loader2, Calendar, DollarSign, User, Clock, FileText, CheckCircle2, ChevronDown, Phone, Save, RefreshCw } from 'lucide-react';
+import { Plus, Search, Filter, Eye, Printer, Edit, Trash2, X, Loader2, Calendar, DollarSign, User, Clock, FileText, CheckCircle2, ChevronDown, Phone, Save, RefreshCw, MessageCircle } from 'lucide-react';
 import { Modal } from './Modal';
 import { useSupabaseTable } from '../lib/useSupabaseTable';
 import { supabase } from '../lib/supabaseClient';
@@ -490,6 +490,40 @@ export function Orders({ userId, initialSearch = '', initialTab = 'ativos' }: Or
     closeModal();
   };
 
+  const handleWhatsAppSend = (order: OrderRow) => {
+    if (!order.customer_phone) {
+      alert('Telefone do cliente não cadastrado!');
+      return;
+    }
+    const cleanPhone = order.customer_phone.replace(/\D/g, '');
+    const targetPhone = cleanPhone.startsWith('55') ? cleanPhone : `55${cleanPhone}`;
+    
+    const itemsText = (order.items || [])
+      .map(item => `• *${item.equipmentName}* × ${item.quantity}`)
+      .join('\n');
+
+    const startDateFmt = formatSafeDateTime(order.start_date);
+    const endDateFmt = order.end_date ? formatSafeDateTime(order.end_date) : '-';
+
+    const message = `Olá, *${order.customer_name}*!
+Segue o resumo do seu aluguel (Contrato: *${order.contract_number || 'S/N'}*):
+
+*Equipamentos:*
+${itemsText}
+
+*Período:*
+📅 Saída: ${startDateFmt}
+📅 Devolução: ${endDateFmt}
+
+*Pagamento:* ${order.payment_method || 'Dinheiro'}
+*Valor Total:* R$ ${Number(order.total_amount).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+
+Agradecemos a preferência!
+*JD LOCAÇÃO*`;
+
+    window.open(`https://api.whatsapp.com/send?phone=${targetPhone}&text=${encodeURIComponent(message)}`, '_blank');
+  };
+
   const handlePrint = async (order: OrderRow) => {
     const pw = window.open('', '_blank');
     if (!pw) { alert('Por favor, permita popups para imprimir.'); return; }
@@ -900,6 +934,9 @@ export function Orders({ userId, initialSearch = '', initialTab = 'ativos' }: Or
                     </button>
                     <button onClick={() => handlePrint(order)} className="p-2 text-slate-400 hover:text-indigo-600 hover:bg-indigo-50 rounded-lg transition-colors border border-transparent hover:border-indigo-100" title="Imprimir">
                       <Printer className="w-4 h-4" />
+                    </button>
+                    <button onClick={() => handleWhatsAppSend(order)} className="p-2 text-slate-400 hover:text-[#25D366] hover:bg-emerald-50 rounded-lg transition-colors border border-transparent hover:border-emerald-100" title="Enviar WhatsApp">
+                      <MessageCircle className="w-4 h-4 text-emerald-500" />
                     </button>
                     {order.status === 'rented' && (
                       <button 

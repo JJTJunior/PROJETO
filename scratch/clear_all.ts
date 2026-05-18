@@ -10,13 +10,13 @@ async function clearAll() {
   console.log('Cleaning tables...');
   const tables = ['equipments', 'customers', 'categories', 'orders', 'transactions', 'maintenance'];
   for (const tbl of tables) {
-    const { error, count } = await supabase
+    const { data, error } = await supabase
       .from(tbl)
       .delete()
       .neq('id', '0') // delete all rows (id is UUID, none equal to '0')
-      .select('id', { count: 'exact', head: true });
+      .select('*');
     if (error) console.error(`Error clearing ${tbl}:`, error);
-    else console.log(`Cleared ${tbl}, rows removed: ${count}`);
+    else console.log(`Cleared ${tbl}, rows removed: ${data?.length || 0}`);
   }
   console.log('All tables cleaned.');
 }

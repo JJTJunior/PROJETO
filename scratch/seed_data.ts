@@ -29,9 +29,9 @@ async function seed() {
     }
   ];
 
-  const { data: eqData, error: eqErr } = await supabase.from('equipments').insert(equipments);
+  const { error: eqErr } = await supabase.from('equipments').insert(equipments);
   if (eqErr) console.error('Erro ao inserir equipamentos:', eqErr);
-  else console.log('Equipamentos inseridos:', eqData?.length);
+  else console.log('Equipamentos inseridos:', equipments.length);
 
   // Clientes de exemplo
   const customers = [
@@ -49,9 +49,9 @@ async function seed() {
     }
   ];
 
-  const { data: custData, error: custErr } = await supabase.from('customers').insert(customers);
+  const { error: custErr } = await supabase.from('customers').insert(customers);
   if (custErr) console.error('Erro ao inserir clientes:', custErr);
-  else console.log('Clientes inseridos:', custData?.length);
+  else console.log('Clientes inseridos:', customers.length);
 
   // Categorias de exemplo (despesa, receita, equipamento)
   const categories = [
@@ -60,9 +60,9 @@ async function seed() {
     { user_id: 'default_user', name: 'Equipamento', type: 'equipment' }
   ];
 
-  const { data: catData, error: catErr } = await supabase.from('categories').insert(categories);
+  const { error: catErr } = await supabase.from('categories').insert(categories);
   if (catErr) console.error('Erro ao inserir categorias:', catErr);
-  else console.log('Categorias inseridas:', catData?.length);
+  else console.log('Categorias inseridas:', categories.length);
 
   console.log('Seed concluído.');
 }

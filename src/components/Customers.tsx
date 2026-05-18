@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Plus, Search, Edit, Trash2, Mail, Phone, Loader2 } from 'lucide-react';
+import { Plus, Search, Edit, Trash2, Mail, Phone, Loader2, MessageCircle } from 'lucide-react';
 import { Modal } from './Modal';
 import { useSupabaseTable } from '../lib/useSupabaseTable';
 import { supabase } from '../lib/supabaseClient';
@@ -186,6 +186,21 @@ export function Customers({ userId, initialSearch = '' }: CustomersProps) {
                 </div>
 
                 <div className="flex items-center justify-end gap-2 mt-6 pt-4 border-t border-slate-50">
+                  <button 
+                    onClick={() => {
+                      if (!customer.phone) {
+                        alert('Telefone não cadastrado!');
+                        return;
+                      }
+                      const cleanPhone = customer.phone.replace(/\D/g, '');
+                      const targetPhone = cleanPhone.startsWith('55') ? cleanPhone : `55${cleanPhone}`;
+                      window.open(`https://api.whatsapp.com/send?phone=${targetPhone}&text=${encodeURIComponent(`Olá, *${customer.name}*!`)}`, '_blank');
+                    }} 
+                    className="p-2 text-slate-400 hover:text-[#25D366] hover:bg-emerald-50 rounded-lg transition-colors border border-transparent hover:border-emerald-100" 
+                    title="Enviar WhatsApp"
+                  >
+                    <MessageCircle className="w-4 h-4 text-emerald-500" />
+                  </button>
                   <button 
                     onClick={() => handleEdit(customer)} 
                     className="p-2 text-slate-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors border border-transparent hover:border-blue-100" 
