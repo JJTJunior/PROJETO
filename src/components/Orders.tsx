@@ -3,7 +3,7 @@ import { Plus, Search, Filter, Eye, Printer, Edit, Trash2, X, Loader2, Calendar,
 import { Modal } from './Modal';
 import { useSupabaseTable } from '../lib/useSupabaseTable';
 import { supabase } from '../lib/supabaseClient';
-import { formatSafeDateTime, toTimestamp } from '../lib/dateUtils';
+import { formatSafeDateTime, formatSafeDate, toTimestamp } from '../lib/dateUtils';
 
 interface OrderItem { equipmentId: string; equipmentName: string; quantity: number; price?: number; lotNumber?: string; }
 interface EquipmentRow { id: string; name: string; price_per_week: number; price_per_day: number; price_per_month: number; stock_available: number; stock_rented: number; lots?: { lot_number: string; quantity: number }[]; }
@@ -502,8 +502,8 @@ export function Orders({ userId, initialSearch = '', initialTab = 'ativos' }: Or
       .map(item => `• *${item.equipmentName}* × ${item.quantity}`)
       .join('\n');
 
-    const startDateFmt = formatSafeDateTime(order.start_date);
-    const endDateFmt = order.end_date ? formatSafeDateTime(order.end_date) : '-';
+    const startDateFmt = formatSafeDate(order.start_date);
+    const endDateFmt = order.end_date ? formatSafeDate(order.end_date) : '-';
 
     const message = `Olá, *${order.customer_name}*!
 Segue o resumo do seu aluguel (Contrato: *${order.contract_number || 'S/N'}*):
