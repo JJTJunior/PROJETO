@@ -52,7 +52,7 @@ interface FinanceProps {
 
 export function Finance({ userId }: FinanceProps) {
   const { rows: transactions, loading: loadingTrans, insert, update, remove } = useSupabaseTable<Transaction>('transactions', userId);
-  const { rows: maintenances, loading: loadingMaint } = useSupabaseTable<MaintenanceRow>('maintenance', userId);
+  const { rows: maintenances, loading: loadingMaint, remove: removeMaintenance } = useSupabaseTable<MaintenanceRow>('maintenance', userId);
   const [orders, setOrders] = useState<OrderRow[]>([]);
   const [loadingOrders, setLoadingOrders] = useState(true);
   
@@ -412,9 +412,21 @@ export function Finance({ userId }: FinanceProps) {
                           </button>
                         </>
                       ) : (
-                        <span className="text-[10px] text-slate-300 font-bold uppercase italic tracking-widest bg-slate-50/50 px-2 py-1 rounded-md">
-                          Automático
-                        </span>
+                        <>
+                          <span className="text-[10px] text-slate-300 font-bold uppercase italic tracking-widest bg-slate-50/50 px-2 py-1 rounded-md">
+                            Automático
+                          </span>
+                          <button
+                            onClick={() => {
+                              const maintId = t.id.replace('maint_', '');
+                              removeMaintenance(maintId);
+                            }}
+                            className="p-2 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors border border-transparent hover:border-red-100"
+                            title="Excluir Manutenção"
+                          >
+                            <Trash2 className="w-4 h-4" />
+                          </button>
+                        </>
                       )}
                     </div>
                   </div>
