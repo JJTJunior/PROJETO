@@ -84,11 +84,7 @@ export function Dashboard({ userId, onNavigate }: DashboardProps) {
       const totalRented = ordList.filter(o => o.status === 'rented').length;
       const totalMaintenance = eqList.reduce((sum, eq) => sum + (eq.stock_maintenance || 0), 0);
 
-      // Legacy fallback: orders that are completed but don't have a tracking transaction
-      const legacyOrders = ordList.filter(o => 
-        o.status === 'completed' && 
-        !trList.some(t => t.category === 'Aluguel' && t.description.includes(`(Contrato: ${o.contract_number || 'S/N'})`))
-      );
+
 
       // Paid Transactions for Current Month
       const monthRevPaid = trList
@@ -100,9 +96,7 @@ export function Dashboard({ userId, onNavigate }: DashboardProps) {
         .filter(t => t.type === 'income' && t.status === 'pending' && t.date && t.date.startsWith(currentMonth))
         .reduce((sum, t) => sum + Number(t.amount), 0);
 
-      const monthRev = monthRevPaid +
-        legacyOrders.filter(o => o.end_date && o.end_date.startsWith(currentMonth))
-        .reduce((sum, o) => sum + Number(o.total_amount), 0);
+      const monthRev = monthRevPaid;
       
       const monthExp = [
         ...trList.filter(t => t.type === 'expense' && t.status === 'paid' && t.date && t.date.startsWith(currentMonth)),
@@ -130,9 +124,7 @@ export function Dashboard({ userId, onNavigate }: DashboardProps) {
       
       const yearInc = trList
         .filter(t => t.type === 'income' && (t.status === 'paid' || t.status === 'pending') && t.date && t.date.startsWith(currentYear))
-        .reduce((sum, t) => sum + Number(t.amount || 0), 0) + 
-        legacyOrders.filter(o => o.end_date && o.end_date.startsWith(currentYear))
-        .reduce((sum, o) => sum + Number(o.total_amount || 0), 0);
+        .reduce((sum, t) => sum + Number(t.amount || 0), 0);
 
       const yearExp = [
         ...trList.filter(t => t.type === 'expense' && t.status === 'paid' && t.date && t.date.startsWith(currentYear)),
@@ -147,9 +139,7 @@ export function Dashboard({ userId, onNavigate }: DashboardProps) {
         
         const income = trList
           .filter(t => t.type === 'income' && t.status === 'paid' && t.date && t.date.startsWith(key))
-          .reduce((s, t) => s + Number(t.amount), 0) + 
-          legacyOrders.filter(o => o.end_date && o.end_date.startsWith(key))
-          .reduce((s, o) => s + Number(o.total_amount), 0);
+          .reduce((s, t) => s + Number(t.amount), 0);
 
         const expense = [
           ...trList.filter(t => t.type === 'expense' && t.status === 'paid' && t.date && t.date.startsWith(key)),

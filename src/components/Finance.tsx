@@ -168,16 +168,10 @@ export function Finance({ userId }: FinanceProps) {
 
   const fmt = (v: number) => `R$ ${v.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
 
-  const legacyOrders = orders.filter(o => 
-    o.status === 'completed' && 
-    !transactions.some(t => t.category === 'Aluguel' && t.description.includes(`(Contrato: ${o.contract_number || 'S/N'})`))
-  );
 
   const monthIncome = transactions
     .filter(t => t.status === 'paid' && t.type === 'income' && t.date.startsWith(`${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2,'0')}`))
-    .reduce((s, item) => s + Number(item.amount), 0) +
-    legacyOrders.filter(o => o.end_date && o.end_date.startsWith(`${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2,'0')}`))
-    .reduce((s, o) => s + Number(o.total_amount), 0);
+    .reduce((s, item) => s + Number(item.amount), 0);
 
   const monthExpense = [
     ...transactions.filter(t => t.type === 'expense' && t.status === 'paid' && t.date.startsWith(`${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2,'0')}`)),
@@ -248,9 +242,7 @@ export function Finance({ userId }: FinanceProps) {
 
   const yearIncome = transactions
     .filter(t => t.status === 'paid' && t.type === 'income' && t.date.startsWith(`${now.getFullYear()}`))
-    .reduce((s, item) => s + Number(item.amount), 0) + 
-    legacyOrders.filter(o => o.end_date && o.end_date.startsWith(`${now.getFullYear()}`))
-    .reduce((s, o) => s + Number(o.total_amount), 0);
+    .reduce((s, item) => s + Number(item.amount), 0);
 
   const yearExpense = [
     ...transactions.filter(t => t.type === 'expense' && t.status === 'paid' && t.date.startsWith(`${now.getFullYear()}`)),
@@ -264,9 +256,7 @@ export function Finance({ userId }: FinanceProps) {
     
     const income = transactions
       .filter(t => t.status === 'paid' && t.type === 'income' && t.date.startsWith(key))
-      .reduce((s, item) => s + Number(item.amount), 0) + 
-      legacyOrders.filter(o => o.end_date && o.end_date.startsWith(key))
-      .reduce((s, o) => s + Number(o.total_amount), 0);
+      .reduce((s, item) => s + Number(item.amount), 0);
     
     const expense = [
       ...transactions.filter(t => t.type === 'expense' && t.status === 'paid' && t.date.startsWith(key)),
